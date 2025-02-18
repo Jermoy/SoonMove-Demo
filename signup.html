@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<head></head>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<link rel="stylesheet" href="signup.css">
+<link rel="stylesheet" href="shared.css">
+</head>
+<div class="signup-container">
+    <div class="signup-header">
+        <div class="logo">SoonMove</div>
+        <p>Create your account and start finding your perfect property</p>
+    </div>
+
+    <form id="signupForm">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required>
+                <div class="error-message" id="firstNameError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required>
+                <div class="error-message" id="lastNameError"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+            <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+            <div class="error-message" id="confirmPasswordError"></div>
+        </div>
+
+        <div class="terms-container">
+            <div class="terms-checkbox">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">
+                    I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
+                </label>
+            </div>
+            <div class="error-message" id="termsError"></div>
+        </div>
+
+        <button type="submit" class="signup-btn">Create Account</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="login.html">Log in</a>
+    </div>
+</div>
+<script type= module src="signup.js"></script>
+<div id="loadingSpinner" class="loading-spinner" style="display: none;">
+    <div class="spinner"></div>
+</div>
+<div id="generalError" class="error-banner" style="display: none;"></div>
+</html>

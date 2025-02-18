@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Property - SoonMove</title>
+    <link rel="stylesheet" href="List-property.css">
+        <!-- Add Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">SoonMove</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Search</a>
+            <a href="#" class="active">List Property</a>
+            <a href="#">Dashboard</a>
+            <a href="#" class="login-btn">Login</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <h1>List Your Property</h1>
+        <p>Reach renters effortlessly</p>
+    </section>
+
+    <section class="list-property-form">
+        <form action="#" method="post">
+            <!-- Property Details Section -->
+            <div class="form-group">
+                <label for="bedrooms">Bedrooms:</label>
+                <select id="bedrooms" name="bedrooms">
+                    <option value="studio">Studio</option>
+                    <!-- Options up to 12 Bedrooms -->
+                    <option value="1">1 Bedrooms</option>
+                    <option value="2">2 Bedrooms</option>
+                    <option value="3">3 Bedrooms</option>
+                    <option value="4">4 Bedrooms</option>
+                    <option value="5">5 Bedrooms</option>
+                    <option value="6">6 Bedrooms</option>
+                    <option value="7">7 Bedrooms</option>
+                    <option value="8">8 Bedrooms</option>
+                    <option value="9">9 Bedrooms</option>
+                    <option value="10">10 Bedrooms</option>
+                    <option value="11">11 Bedrooms</option>
+                    <option value="12">12 Bedrooms</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rent">Rent (£):</label>
+                <input type="number" id="rent" name="rent" placeholder="Enter rent amount" min="0" step="50" required>
+                <label>
+                    <input type="radio" name="price_period" value="weekly"> Weekly
+                </label>
+                <label>
+                    <input type="radio" name="price_period" value="monthly" checked> Monthly
+                </label>
+            </div>
+
+            <!-- Additional Property Fields -->
+            <div class="form-group">
+                <label for="propertyImage">Property Image:</label>
+                <input type="file" id="propertyImage" name="propertyImage" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Property Description:</label>
+                <textarea id="description" name="description" placeholder="Brief description of the property" rows="4" maxlength="500"></textarea>
+            </div>
+
+            <!-- Address Fields -->
+            <div class="form-group">
+                <label for="address">House Number:</label>
+                <input type="text" id="address" name="address" placeholder="e.g., 123" required>
+            </div>
+
+            <div class="form-group">
+                <label for="street">Street Name:</label>
+                <input type="text" id="street" name="street" placeholder="Street name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" placeholder="City name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="postcode">Postcode:</label>
+                <input type="text" id="postcode" name="postcode" placeholder="Postcode" pattern="[A-Z0-9]{3,8}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="county">County:</label>
+                <input type="text" id="county" name="county" placeholder="County name" required>
+            </div>
+
+            <!-- Contact Details -->
+            <div class="form-group">
+                <label for="fullname">Full Name:</label>
+                <input type="text" id="fullname" name="fullname" placeholder="Your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" placeholder="Your phone number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" placeholder="Your email address" required>
+            </div>
+
+            <!-- User Type -->
+            <div class="form-group">
+                <p>I am:</p>
+                <label>
+                    <input type="radio" name="user_type" value="agent"> Agent
+                </label>
+                <label>
+                    <input type="radio" name="user_type" value="live_out_landlord"> Live-out Landlord
+                </label>
+                <label>
+                    <input type="radio" name="user_type" value="live_in_landlord" checked> Live-in Landlord
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" class="submit-btn" onclick="showPreview()">Preview Listing</button>
+
+            <!-- Preview Modal -->
+            <div id="previewModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal" onclick="closePreview()">&times;</span>
+                    <h2>Preview Property Listing</h2>
+                    <div id="previewContent"></div>
+                    <button type="submit" class="submit-btn">List Property</button>
+                </div>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <!-- Footer details go here -->
+</footer>
+
+<script src="list-property-DEEP.js"></script>
+<script>
+    // JavaScript for Preview Modal
+    function showPreview() {
+        const previewContent = document.getElementById('previewContent');
+        previewContent.innerHTML = `
+            <p><strong>Bedrooms:</strong> ${document.getElementById('bedrooms').value}</p>
+            <p><strong>Rent:</strong> £${document.getElementById('rent').value} per ${
+                document.querySelector('input[name="price_period"]:checked').value
+            }</p>
+            <p><strong>Address:</strong> ${document.getElementById('address').value}, ${document.getElementById('street').value}, ${document.getElementById('city').value}, ${document.getElementById('postcode').value}, ${document.getElementById('county').value}</p>
+            <p><strong>Description:</strong> ${document.getElementById('description').value || 'N/A'}</p>
+            <p><strong>Contact:</strong> ${document.getElementById('fullname').value}, ${document.getElementById('phone').value}, ${document.getElementById('email').value}</p>
+            <p><strong>Listed By:</strong> ${
+                document.querySelector('input[name="user_type"]:checked').parentElement.innerText.trim()
+            }</p>`;
+        document.getElementById('previewModal').style.display = 'block';
+    }
+
+    function closePreview() {
+        document.getElementById('previewModal').style.display = 'none';
+    }
+</script>
+</body>
+</html>

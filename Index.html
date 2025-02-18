@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoonMove - Find Your Next Home</title>
+    <link rel="stylesheet" href="Styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    
+<header>
+    <nav>
+        <div class="logo">SoonMove</div>
+        <div class="nav-links">
+            <a href="#index.html" class="active">Home</a>
+            <a href="#Soonmove-search.html">Search</a>
+            <a href="#List-property.html">List Property</a>
+            <a href="#dash.html">Dashboard</a>
+            <a href="#login.html" class="login-btn">Login</a>
+        </div>
+        <div class="menu-icon">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+</header>
+
+
+    <main>
+        <section class="hero">
+            <h1>Find your perfect home</h1>
+            <p>We make property viewing and booking simple</p>
+            <div class="search-container">
+                <input type="text" placeholder="Enter location, property type, or keywords">
+                <button class="search-btn">Search</button>
+            </div>
+        </section>
+
+        <section class="featured-properties">
+            <h2>Featured Properties</h2>
+            <div class="property-grid">
+                <!-- Property Card Template -->
+                <div class="property-card">
+                    <div class="property-image">
+                        <img src="/api/placeholder/400/300" alt="Modern Apartment">
+                        <span class="price">£1,200/month</span>
+                    </div>
+                    <div class="property-info">
+                        <h3>Modern City Apartment</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Manchester City Center</p>
+                        <div class="property-details">
+                            <span><i class="fas fa-bed"></i> 2 beds</span>
+                            <span><i class="fas fa-bath"></i> 1 bath</span>
+                            <span><i class="fas fa-vector-square"></i> 750 sq ft</span>
+                        </div>
+                        <div class="property-actions">
+                            <button class="view-btn">Book Viewing</button>
+                            <button class="message-btn">Message Landlord</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- More property cards... -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Book a Viewing</h2>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="viewingDate">Select Date</label>
+                    <input type="date" id="viewingDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="viewingTime">Select Time</label>
+                    <select id="viewingTime" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="employment">Employment Status</label>
+                    <select id="employment" required>
+                        <option value="">Please select</option>
+                        <option value="employed">Employed Full-time</option>
+                        <option value="self-employed">Self-employed</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="income">Monthly Income</label>
+                    <input type="number" id="income" required>
+                </div>
+                <button type="submit" class="submit-btn">Request Viewing</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Message Landlord</h2>
+            <form id="messageForm">
+                <div class="form-group">
+                    <label for="messageSubject">Subject</label>
+                    <input type="text" id="messageSubject" required>
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">Message</label>
+                    <textarea id="messageContent" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>SoonMove</h3>
+                <p>Making property rentals simple and efficient.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@soonmove.com</p>
+                <p>Phone: (044) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 SoonMove. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

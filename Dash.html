@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoonMove - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Dash-complete-css.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">SoonMove</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Search</a>
+            <a href="#">List Property</a>
+            <a href="#" class="active">Dashboard</a>
+            <a href="#" class="login-btn">Login</a>
+        </div>
+        <div class="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>My Dashboard</h1>
+        </div>
+        
+        <!-- Uploaded Properties Section -->
+        <div class="dashboard-section">
+            <h2>Uploaded Properties <span class="section-count">3</span></h2>
+            <div class="property-list">
+                <div class="property-item">
+                    <div class="property-thumbnail">
+                        <img src="/api/placeholder/100/80" alt="Modern Apartment">
+                    </div>
+                    <div class="property-details">
+                        <div class="property-title">Modern City Apartment</div>
+                        <div class="property-location">Manchester City Center</div>
+                        <div class="property-price">£1,200/month</div>
+                    </div>
+                    <div class="property-actions">
+                        <button class="action-btn edit-btn">Edit</button>
+                        <button class="action-btn delete-btn">Delete</button>
+                    </div>
+                </div>
+                <div class="property-item">
+                    <div class="property-thumbnail">
+                        <img src="/api/placeholder/100/80" alt="Studio Flat">
+                    </div>
+                    <div class="property-details">
+                        <div class="property-title">Studio Flat</div>
+                        <div class="property-location">Birmingham Center</div>
+                        <div class="property-price">£900/month</div>
+                    </div>
+                    <div class="property-actions">
+                        <button class="action-btn edit-btn">Edit</button>
+                        <button class="action-btn delete-btn">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recently Viewed Properties Section -->
+        <div class="dashboard-section">
+            <h2>Recently Viewed <span class="section-count">4</span></h2>
+            <div class="property-list">
+                <div class="property-item">
+                    <div class="property-thumbnail">
+                        <img src="/api/placeholder/100/80" alt="Luxury Penthouse">
+                    </div>
+                    <div class="property-details">
+                        <div class="property-title">Luxury Penthouse</div>
+                        <div class="property-location">Liverpool City Center</div>
+                        <div class="property-price">£2,500/month</div>
+                        <div class="view-count">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Viewed 2 hours ago
+                        </div>
+                    </div>
+                    <button class="favorite-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Favourited Properties Section -->
+        <div class="dashboard-section">
+            <h2>Favourited Properties <span class="section-count">2</span></h2>
+            <div class="property-list">
+                <div class="property-item">
+                    <div class="property-thumbnail">
+                        <img src="/api/placeholder/100/80" alt="Garden Apartment">
+                    </div>
+                    <div class="property-details">
+                        <div class="property-title">Garden Apartment</div>
+                        <div class="property-location">Leeds Suburb</div>
+                        <div class="property-price">£1,800/month</div>
+                    </div>
+                    <button class="favorite-btn active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add loading spinner -->
+<div id="loadingSpinner" class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>SoonMove</h3>
+                <p>Making property rentals simple and efficient.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@soonmove.com</p>
+                <p>Phone: (044) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2024 SoonMove. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="DashBoard-Deep.js"></script>
+</body>
+</html>
