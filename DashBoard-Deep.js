@@ -1,3 +1,4 @@
+// IMPORT FIREBASE MODULES
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
   getAuth, 
@@ -6,19 +7,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
   getFirestore,
+  collection,
   doc,
   getDoc,
   updateDoc,
-  deleteField,
-  onSnapshot
+  deleteDoc,
+  arrayUnion,
+  arrayRemove,
+  onSnapshot,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { 
-  getStorage,
-  ref,
-  deleteObject
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// FIREBASE CONFIGURATION
 const firebaseConfig = {
   apiKey: "AIzaSyAcjlRrl_Lfoma3b7ue9lqX9O81ctgWcAo",
   authDomain: "soonmove-a1f40.firebaseapp.com",
@@ -30,185 +31,92 @@ const firebaseConfig = {
   measurementId: "G-G8MQP6GHBE"
 };
 
+// INITIALIZATIONS
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-let dashboardState = {
-  uploadedProperties: [],
-  recentlyViewed: [],
-  favorites: [],
-  currentUser: null
-};
+// GLOBAL STATE
+let currentUser = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  initializeAuthState();
+// DOM ELEMENTS
+const logoutButton = document.querySelector('.logout-btn');
+const propertySections = document.querySelectorAll('.property-list');
+const loadingSpinner = document.getElementById('loadingSpinner');
+
+// MAIN FUNCTIONS
+document.addEventListener('DOMContentLoaded', async () => {
+  // Navigation
+  setupNavigation();
+  // Load User Data
+  initializeAuthListener();
+  // Setup Interactions
   setupEventListeners();
 });
 
-async function initializeAuthState() {
+// AUTHENTICATION
+function initializeAuthListener() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      dashboardState.currentUser = user;
-      setupNavigation(user);
-      await loadUserData(user.uid);
+      currentUser = user;
+      showDashboard(user.uid);
     } else {
       window.location.href = '/login.html';
     }
   });
 }
 
-async function loadUserData(userId) {
-  const userRef = doc(db, 'users', userId);
-  
-  onSnapshot(userRef, (doc) => {
-    if (doc.exists()) {
-      const data = doc.data();
-      dashboardState.uploadedProperties = data.properties || [];
-      dashboardState.favorites = data.favorites || [];
-      renderDashboard();
-    }
+async function showDashboard(userId) {
+  // Show Loading Spinner
+  toggleLoading(true);
+
+  // Fetch User Data
+  const userData = await getUserData(userId);
+  if (!userData) return;
+
+  // Render Property Sections
+  renderUploadedProperties(userData.properties);
+  renderRecentViewed(userData.recentViews);
+  renderFavoritedProperties(userData.favorites);
+
+  // Hide Loading Spinner
+  toggleLoading(false);
+}
+
+async function getUserData(userId) {
+  const docRef = doc(db, 'users', userId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists() ? docSnap.data() : null;
+}
+
+// DATA RENDERING
+function renderUploadedProperties(properties) {
+  const container = document.querySelector('.uploaded-properties .property-list');
+  container.innerHTML = '';
+
+  properties.forEach(property => {
+    const html = createPropertyCard(property, true);
+    container.insertAdjacentHTML('beforeend', html);
   });
 }
 
-function setupNavigation(user) {
-  const navLinks = document.querySelector('.nav-links');
-  if (navLinks) {
-    navLinks.innerHTML = `
-      <a href="#">Home</a>
-      <a href="#">Search</a>
-      <a href="#">List Property</a>
-      <a href="#" class="active">Dashboard</a>
-      <button class="logout-btn">Logout</button>
-    `;
-    
-    document.querySelector('.logout-btn').addEventListener('click', () => {
-      signOut(auth);
-    });
-  }
-}
+function renderRecentViewed(properties) {
+  const container = document.querySelector('.recently-viewed .property-list');
+  container.innerHTML = '';
 
-function setupEventListeners() {
-  document.querySelector('.menu-icon')?.addEventListener('click', toggleMobileMenu);
-  setupPropertyActions();
-}
-
-function toggleMobileMenu() {
-  const navLinks = document.querySelector('.nav-links');
-  navLinks.classList.toggle('responsive');
-}
-
-function setupPropertyActions() {
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('edit-btn')) {
-      const propertyId = e.target.closest('.property-item').dataset.id;
-      handleEditProperty(propertyId);
-    }
-    
-    if (e.target.classList.contains('delete-btn')) {
-      const propertyId = e.target.closest('.property-item').dataset.id;
-      handleDeleteProperty(propertyId);
-    }
-    
-    if (e.target.classList.contains('favorite-btn')) {
-      const propertyId = e.target.closest('.property-item').dataset.id;
-      toggleFavorite(propertyId);
-    }
+  properties.forEach(property => {
+    const html = createPropertyCard(property);
+    container.insertAdjacentHTML('beforeend', html);
   });
 }
 
-async function handleEditProperty(propertyId) {
-  const property = dashboardState.uploadedProperties.find(p => p.id === propertyId);
-  if (!property) return;
-
-  const newTitle = prompt('Enter new title:', property.title);
-  if (newTitle) {
-    await updateProperty(propertyId, { title: newTitle });
-  }
-}
-
-async function handleDeleteProperty(propertyId) {
-  if (confirm('Are you sure you want to delete this property?')) {
-    // Delete images from storage
-    const property = dashboardState.uploadedProperties.find(p => p.id === propertyId);
-    if (property?.images) {
-      await Promise.all(property.images.map(async (imageUrl) => {
-        const imageRef = ref(storage, imageUrl);
-        await deleteObject(imageRef);
-      }));
-    }
-    
-    await deleteProperty(propertyId);
-  }
-}
-
-async function toggleFavorite(propertyId) {
-  const userRef = doc(db, 'users', dashboardState.currentUser.uid);
-  const isFavorite = dashboardState.favorites.includes(propertyId);
-  
-  await updateDoc(userRef, {
-    favorites: isFavorite ? 
-      dashboardState.favorites.filter(id => id !== propertyId) :
-      [...dashboardState.favorites, propertyId]
-  });
-}
-
-async function updateProperty(propertyId, updates) {
-  const userRef = doc(db, 'users', dashboardState.currentUser.uid);
-  
-  await updateDoc(userRef, {
-    [`properties.${propertyId}`]: {
-      ...updates,
-      lastModified: new Date().toISOString()
-    }
-  });
-}
-
-async function deleteProperty(propertyId) {
-  const userRef = doc(db, 'users', dashboardState.currentUser.uid);
-  
-  await updateDoc(userRef, {
-    [`properties.${propertyId}`]: deleteField(),
-    favorites: dashboardState.favorites.filter(id => id !== propertyId)
-  });
-}
-
-function renderDashboard() {
-  renderUploadedProperties();
-  renderFavorites();
-  updateSectionCounts();
-}
-
-function renderUploadedProperties() {
-  const container = document.querySelector('.dashboard-section:first-child .property-list');
-  if (!container) return;
-
-  container.innerHTML = dashboardState.uploadedProperties
-    .map(property => createPropertyCard(property, true))
-    .join('');
-}
-
-function renderFavorites() {
+function renderFavoritedProperties(properties) {
   const container = document.querySelector('.favorited-properties .property-list');
-  if (!container) return;
+  container.innerHTML = '';
 
-  container.innerHTML = dashboardState.favorites
-    .map(propertyId => {
-      const property = dashboardState.uploadedProperties.find(p => p.id === propertyId);
-      return property ? createPropertyCard(property, false, true) : '';
-    })
-    .join('');
-}
-
-function updateSectionCounts() {
-  document.querySelectorAll('.section-count').forEach(element => {
-    const section = element.closest('.dashboard-section');
-    if (section.classList.contains('uploaded-properties')) {
-      element.textContent = dashboardState.uploadedProperties.length;
-    } else if (section.classList.contains('favorited-properties')) {
-      element.textContent = dashboardState.favorites.length;
-    }
+  properties.forEach(property => {
+    const html = createPropertyCard(property, false, true);
+    container.insertAdjacentHTML('beforeend', html);
   });
 }
 
@@ -216,14 +124,11 @@ function createPropertyCard(property, showActions = false, isFavorite = false) {
   return `
     <div class="property-item" data-id="${property.id}">
       <div class="property-thumbnail">
-        ${property.images?.length ? 
-          `<img src="${property.images[0]}" alt="${property.title}">` : 
-          `<div class="no-image">No Image</div>`}
+        <img src="${property.thumbnail || '/api/placeholder/100/80'}" alt="Property">
       </div>
       <div class="property-details">
-        <div class="property-title">${property.title}</div>
-        <div class="property-location">${property.location}</div>
-        <div class="property-price">${property.price}</div>
+        <h4>${property.title || 'No Title'}</h4>
+        <p>${property.address.city || 'Location'} | £${property.rent || 0}/${property.pricePeriod || 'month'}</p>
       </div>
       ${showActions ? `
         <div class="property-actions">
@@ -231,27 +136,107 @@ function createPropertyCard(property, showActions = false, isFavorite = false) {
           <button class="action-btn delete-btn">Delete</button>
         </div>
       ` : ''}
-      <button class="favorite-btn ${isFavorite ? 'active' : ''}">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      </button>
+      <button class="favorite-btn ${isFavorite ? 'active' : ''}">${isFavorite ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>
     </div>
   `;
 }
 
-function toggleLoading(isLoading) {
-  const loader = document.getElementById('loadingSpinner');
-  const content = document.querySelector('.dashboard');
-  if (loader && content) {
-    loader.style.display = isLoading ? 'flex' : 'none';
-    content.style.opacity = isLoading ? '0.5' : '1';
+// EVENT LISTENERS
+function setupNavigation() {
+  logoutButton?.addEventListener('click', () => {
+    signOut(auth).then(() => {
+      window.location.href = '/login.html';
+    });
+  });
+}
+
+function setupEventListeners() {
+  document.querySelector('.menu-icon')?.addEventListener('click', toggleMobileMenu);
+  document.addEventListener('click', handlePropertyActions);
+}
+
+function toggleMobileMenu() {
+  const navLinks = document.querySelector('.nav-links');
+  navLinks.classList.toggle('responsive');
+}
+
+async function handlePropertyActions(e) {
+  const target = e.target;
+  const propertyItem = target.closest('.property-item');
+  if (!propertyItem) return;
+
+  const propertyId = propertyItem.dataset.id;
+  if (!propertyId) return;
+
+  if (target.classList.contains('edit-btn')) {
+    handleEditProperty(propertyId);
+  } else if (target.classList.contains('delete-btn')) {
+    handleDeleteProperty(propertyId);
+  } else if (target.classList.contains('favorite-btn')) {
+    handleFavoriteProperty(propertyId);
   }
 }
 
-// Error handling
+// PROPERTY ACTIONS
+async function handleEditProperty(propertyId) {
+  const newUserProperties = await updatePropertyField(propertyId, 'edited', true);
+  renderUploadedProperties(newUserProperties);
+}
+
+async function handleDeleteProperty(propertyId) {
+  if (!confirm('Delete this property?')) return;
+  
+  const userRef = doc(db, 'users', currentUser.uid);
+  await updateDoc(userRef, {
+    properties: arrayRemove(propertyId)
+  });
+
+  const docRef = doc(db, 'properties', propertyId);
+  await deleteDoc(docRef);
+
+  showSuccessAlert('Property deleted');
+  // Reloading is necessary since Firestore doesn't auto-update without a listener
+  window.location.reload();
+}
+
+async function handleFavoriteProperty(propertyId) {
+  const userRef = doc(db, 'users', currentUser.uid);
+  await updateDoc(userRef, {
+    favorites: arrayUnion(propertyId)
+  });
+  showSuccessAlert('Added to favorites');
+}
+
+// UTILITY FUNCTIONS
+function toggleLoading(isLoading) {
+  if (isLoading) {
+    loadingSpinner.style.display = 'block';
+    document.body.style.opacity = '0.5';
+  } else {
+    loadingSpinner.style.display = 'none';
+    document.body.style.opacity = '1';
+  }
+}
+
+function showSuccessAlert(message) {
+  alert(message);
+  setTimeout(() => {
+    document.body.style.opacity = '1';
+  }, 1000);
+}
+
+// FIRESTORE OPERATIONS
+async function updatePropertyField(propertyId, field, value) {
+  const userRef = doc(db, 'users', currentUser.uid);
+  await updateDoc(userRef, {
+    [ `properties.${propertyId}.${field}` ]: value
+  });
+
+  return (await getUserData(currentUser.uid)).properties;
+}
+
+// ERROR HANDLING
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
-  alert(`Error: ${event.reason.message}`);
+  alert(`Error: ${event.reason.message || event.reason}`);
   toggleLoading(false);
 });
