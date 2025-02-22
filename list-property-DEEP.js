@@ -109,7 +109,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     try {
         await handleFormSubmission(formData);
         alert('Property listed successfully!');
-        window.location.href = '/dashboard.html';
+        window.location.href = '/Dash.html';
     } catch (error) {
         alert(`Error: ${error.message}`);
     }
