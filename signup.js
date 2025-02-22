@@ -39,38 +39,41 @@ export function initializeSignup() {
     e.preventDefault();
     clearErrors();
     generalError.style.display = 'none';
-
-    // Form data
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = passwordInput.value.trim();
-    const confirmPassword = confirmPasswordInput.value.trim();
-    const termsAccepted = document.getElementById('terms').checked;
+    
+    
+        // Form data
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+        const termsAccepted = document.getElementById('terms').checked;
+    
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          
+          // Save additional user data to Firestore
+          await setDoc(doc(db, 'users', userCredential.user.uid), {
+            firstName,
+            lastName,
+            email,
+            emailVerified: false,
+            createdAt: new Date()
+          });
+    
+          await sendEmailVerification(userCredential.user);
+          alert('Account created! Check your email for verification.');
+          window.location.href = '/dashboard.html';
+        } catch (error) {
+          handleSignupError(error);
+        }
+      });
+    }
 
     // Client-side validation
     if (!validateForm(firstName, lastName, email, password, confirmPassword, termsAccepted)) {
       return;
     }
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await sendEmailVerification(userCredential.user); // Send verification email
-      alert('Account created! Check your email for verification.');
-      window.location.href = '/dashboard.html';
-    } catch (error) {
-      handleSignupError(error);
-    }
-  });
-}
-      // Save additional user data to Firestore
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        firstName,
-        lastName,
-        email,
-        emailVerified: false,
-        createdAt: new Date()
-      });
 
 
   // Real-time password validation
