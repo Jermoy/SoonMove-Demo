@@ -1,4 +1,3 @@
-// Import necessary Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
   getAuth, 
@@ -12,7 +11,6 @@ import {
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAcjlRrl_Lfoma3b7ue9lqX9O81ctgWcAo",
   authDomain: "soonmove-a1f40.firebaseapp.com",
@@ -24,7 +22,6 @@ const firebaseConfig = {
   measurementId: "G-G8MQP6GHBE"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -37,33 +34,53 @@ export function initializeLogin() {
   const forgotPasswordLink = document.getElementById('forgotPassword');
   const rememberMeCheckbox = document.querySelector('input[name="remember"]');
   const socialButtons = document.querySelectorAll('.social-btn');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const generalError = document.getElementById('generalError');
 
   if (!loginForm) return;
 
-  // Handle form submission
+  const toggleLoading = (isLoading) => {
+    if (isLoading) {
+      loginForm.classList.add('form-disabled');
+      if (loadingSpinner) loadingSpinner.style.display = 'flex';
+    } else {
+      loginForm.classList.remove('form-disabled');
+      if (loadingSpinner) loadingSpinner.style.display = 'none';
+    }
+  };
+
+  const clearErrors = () => {
+    if (emailError) emailError.style.display = 'none';
+    if (passwordError) passwordError.style.display = 'none';
+    if (generalError) generalError.style.display = 'none';
+  };
+
+  const showError = (element, message) => {
+    if (element) {
+      element.textContent = message;
+      element.style.display = 'block';
+    }
+  };
+
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearErrors();
+    toggleLoading(true);
 
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
     const rememberMe = rememberMeCheckbox.checked;
 
     try {
-      // Set session persistence
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-      
-      // Firebase sign-in
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Redirect to dashboard
+      await signInWithEmailAndPassword(auth, email, password);
       window.location.href = '/dashboard.html';
     } catch (error) {
+      toggleLoading(false);
       handleAuthError(error);
     }
   });
 
-  // Handle forgot password
   forgotPasswordLink?.addEventListener('click', async (e) => {
     e.preventDefault();
     const email = prompt('Please enter your email address:');
@@ -78,17 +95,26 @@ export function initializeLogin() {
     }
   });
 
-  // Handle social logins
   socialButtons.forEach(button => {
     button.addEventListener('click', async (e) => {
-      const provider = e.currentTarget.getAttribute('aria-label').includes('Google') 
-        ? new GoogleAuthProvider()
-        : new FacebookAuthProvider();
+      const providerType = e.currentTarget.getAttribute('aria-label');
+      let provider;
+      
+      if (providerType.includes('Google')) {
+        provider = new GoogleAuthProvider();
+      } else if (providerType.includes('Facebook')) {
+        provider = new FacebookAuthProvider();
+      } else {
+        alert('This social login is not supported yet');
+        return;
+      }
 
       try {
-        const result = await signInWithPopup(auth, provider);
+        toggleLoading(true);
+        await signInWithPopup(auth, provider);
         window.location.href = '/dashboard.html';
       } catch (error) {
+        toggleLoading(false);
         handleAuthError(error);
       }
     });
@@ -108,18 +134,14 @@ export function initializeLogin() {
       case 'auth/wrong-password':
         showError(passwordError, 'Incorrect password');
         break;
+      case 'auth/too-many-requests':
+        showError(generalError, 'Too many attempts. Try again later.');
+        break;
       default:
         alert(`Error: ${error.message}`);
     }
   }
-
-  function showError(element, message) {
-    element.textContent = message;
-    element.style.display = 'block';
-  }
-
-  function clearErrors() {
-    emailError.style.display = 'none';
-    passwordError.style.display = 'none';
-  }
 }
+
+// Initialize login functionality
+initializeLogin();

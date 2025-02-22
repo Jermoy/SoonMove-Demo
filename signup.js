@@ -10,7 +10,6 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAcjlRrl_Lfoma3b7ue9lqX9O81ctgWcAo",
   authDomain: "soonmove-a1f40.firebaseapp.com",
@@ -35,52 +34,52 @@ export function initializeSignup() {
 
   if (!signupForm) return;
 
+  // Real-time password validation
+  confirmPasswordInput.addEventListener('input', () => {
+    validatePasswordMatch(passwordInput, confirmPasswordInput);
+  });
+
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearErrors();
     generalError.style.display = 'none';
-    
-    
-        // Form data
-        const firstName = document.getElementById('firstName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const confirmPassword = document.getElementById('confirmPassword').value.trim();
-        const termsAccepted = document.getElementById('terms').checked;
-    
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          
-          // Save additional user data to Firestore
-          await setDoc(doc(db, 'users', userCredential.user.uid), {
-            firstName,
-            lastName,
-            email,
-            emailVerified: false,
-            createdAt: new Date()
-          });
-    
-          await sendEmailVerification(userCredential.user);
-          alert('Account created! Check your email for verification.');
-          window.location.href = '/dashboard.html';
-        } catch (error) {
-          handleSignupError(error);
-        }
-      });
-    }
+
+    // Form data
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+    const termsAccepted = document.getElementById('terms').checked;
 
     // Client-side validation
     if (!validateForm(firstName, lastName, email, password, confirmPassword, termsAccepted)) {
       return;
     }
 
+    try {
+      toggleLoading(true, signupForm, loadingSpinner);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Save additional user data to Firestore
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        firstName,
+        lastName,
+        email,
+        emailVerified: false,
+        createdAt: new Date()
+      });
 
-  // Real-time password validation
-  confirmPasswordInput.addEventListener('input', () => {
-    validatePasswordMatch(passwordInput, confirmPasswordInput);
+      await sendEmailVerification(userCredential.user);
+      alert('Account created! Check your email for verification.');
+      window.location.href = '/dashboard.html';
+    } catch (error) {
+      handleSignupError(error);
+    } finally {
+      toggleLoading(false, signupForm, loadingSpinner);
+    }
   });
-
+}
 
 // Validation functions
 function validateForm(firstName, lastName, email, password, confirmPassword, termsAccepted) {
@@ -188,3 +187,6 @@ function toggleLoading(isLoading, form, spinner) {
     spinner.style.display = 'none';
   }
 }
+
+// Initialize the signup functionality
+initializeSignup();
