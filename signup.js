@@ -10,14 +10,16 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyAcjlRrl_Lfoma3b7ue9lqX9O81ctgWcAo",
+  authDomain: "soonmove-a1f40.firebaseapp.com",
+  databaseURL: "https://soonmove-a1f40-default-rtdb.firebaseio.com",
+  projectId: "soonmove-a1f40",
+  storageBucket: "soonmove-a1f40.firebasestorage.app",
+  messagingSenderId: "781161740833",
+  appId: "1:781161740833:web:b8caef79c1a70c235b0160",
+  measurementId: "G-G8MQP6GHBE"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -52,11 +54,15 @@ export function initializeSignup() {
     }
 
     try {
-      toggleLoading(true, signupForm, loadingSpinner);
-      
-      // Create user with Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
+      await sendEmailVerification(userCredential.user); // Send verification email
+      alert('Account created! Check your email for verification.');
+      window.location.href = '/dashboard.html';
+    } catch (error) {
+      handleSignupError(error);
+    }
+  });
+}
       // Save additional user data to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         firstName,
@@ -66,23 +72,12 @@ export function initializeSignup() {
         createdAt: new Date()
       });
 
-      // Send verification email
-      await sendEmailVerification(userCredential.user);
-      
-      alert('Account created! Please check your email for verification.');
-      window.location.href = '/dashboard.html';
-    } catch (error) {
-      handleSignupError(error);
-    } finally {
-      toggleLoading(false, signupForm, loadingSpinner);
-    }
-  });
 
   // Real-time password validation
   confirmPasswordInput.addEventListener('input', () => {
     validatePasswordMatch(passwordInput, confirmPasswordInput);
   });
-}
+
 
 // Validation functions
 function validateForm(firstName, lastName, email, password, confirmPassword, termsAccepted) {
