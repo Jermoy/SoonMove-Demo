@@ -18,17 +18,15 @@ import {
   deleteObject
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyAcjlRrl_Lfoma3b7ue9lqX9O81ctgWcAo",
-    authDomain: "soonmove-a1f40.firebaseapp.com",
-    databaseURL: "https://soonmove-a1f40-default-rtdb.firebaseio.com",
-    projectId: "soonmove-a1f40",
-    storageBucket: "soonmove-a1f40.firebasestorage.app",
-    messagingSenderId: "781161740833",
-    appId: "1:781161740833:web:b8caef79c1a70c235b0160",
-    measurementId: "G-G8MQP6GHBE"
-  };
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+};
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
