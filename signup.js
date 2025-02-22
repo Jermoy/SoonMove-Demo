@@ -72,7 +72,7 @@ export function initializeSignup() {
 
       await sendEmailVerification(userCredential.user);
       alert('Account created! Check your email for verification.');
-      window.location.href = '/dashboard.html';
+      window.location.href = '/dash.html';
     } catch (error) {
       handleSignupError(error);
     } finally {

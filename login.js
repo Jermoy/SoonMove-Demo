@@ -74,7 +74,7 @@ export function initializeLogin() {
     try {
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = '/dashboard.html';
+      window.location.href = '/dash.html';
     } catch (error) {
       toggleLoading(false);
       handleAuthError(error);
@@ -112,7 +112,7 @@ export function initializeLogin() {
       try {
         toggleLoading(true);
         await signInWithPopup(auth, provider);
-        window.location.href = '/dashboard.html';
+        window.location.href = '/dash.html';
       } catch (error) {
         toggleLoading(false);
         handleAuthError(error);
